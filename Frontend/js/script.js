@@ -3,7 +3,7 @@ import { setDoc, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.4.0/f
 
 
 document.getElementById("registerBtn").addEventListener("click", async () => {
-    alert("teeeeenaaaaaaa");
+
     const userId = document.getElementById("registerUser").value;
     const password = document.getElementById("registerPassword").value;
 
@@ -48,11 +48,11 @@ document.getElementById("loginBtn").addEventListener("click", async () => {
             return;
         }
 
-        // Check password
         const userData = userSnap.data();
         if (userData.password === password) {
             alert("Login Successful!");
             console.log("User logged in:", userId);
+
         } else {
             alert("Incorrect password!");
         }
