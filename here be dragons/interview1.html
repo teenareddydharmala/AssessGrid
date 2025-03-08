@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AssessGrid</title>
+    <link rel="stylesheet" href="./here be dragons/interview1.css">
+</head>
+<body>
+    <div class="sidebar">
+        <h3>Your documents</h3>
+        <div class="upload-box">
+            <p>Drag and drop PDF files here</p>
+            <input type="file" id="fileInput" multiple accept="application/pdf">
+        </div>
+        <ul class="file-list" id="fileList"></ul>
+        <button id="upload_button">Set up Interview</button>
+    </div>
+    <div class="main-content">
+        <!-- <div class="timer" id="timer">00:00</div> -->
+        <h2>Chat with AssessGrid</h2>
+       
+        <textarea id="aiQuestions" class="scrollable-box" readonly>
+            1. Can you introduce yourself?
+            2. What are your strengths and weaknesses?
+            3. How do you handle tight deadlines under pressure?
+            4. Can you describe a challenging project you worked on?
+            5. Why do you want to work for our company?
+            6. Where do you see yourself in 5 years?
+        </textarea>
+        <textarea id="chatInput" class="scrollable-box" placeholder="Type your answer here..."></textarea>
+        <button id="submit_button">Submit</button>
+        <!-- <button id="mic_button">🎙️</button> -->
+    </div>
+    <script src="https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.min.js"></script>
+    <script>
+      pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.min.js';
+    </script>
+    <script type="module" src="./here be dragons/interview1.js"></script>
+</body>
+</html>
