@@ -1,5 +1,9 @@
+
 from google import genai
 client = genai.Client(api_key="AIzaSyBKhoXFiVWjdlkF6qmPUluho0z1971_gr0")
+
+import random
+import string
 
 import firebase_admin
 from firebase_admin import credentials, firestore
@@ -37,5 +41,38 @@ def create_questions(interview_id):
     return generate_questions(get_interview_data(interview_id))
 
 
-print(create_questions("sXk81e"))
+def generate_unique_key(length=6):
+    return ''.join(random.choices(string.ascii_letters + string.digits, k=length))
+
+def add_question(question):
+    ques_id = generate_unique_key()
+    db.collection("questions").document(ques_id).set({
+        "question": question,
+        "answer": None
+    })
+    return ques_id
+
+def add_questions_to_interview(interview_id, questions):
+    interview_ref = db.collection("interviews").document(interview_id)
+    if not interview_ref.get().exists:
+        print(f"Interview with ID {interview_id} not found.")
+    
+    ques_ids =[]
+    for question in questions:
+        interview_ref.update({
+            "questions": firestore.ArrayUnion([add_question(question)])
+        })
+
+   
+interview_id = "wnwvLn"
+questions = [
+    "What are the key differences between Python and Java?",
+    "Explain the concept of recursion with an example.",
+    "What is a database index, and why is it useful?",
+    "Describe the working of the OSI model in networking.",
+    "What are the advantages of using Firebase Firestore?"
+]
+
+add_questions_to_interview(interview_id, questions)
+
 
