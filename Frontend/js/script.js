@@ -50,13 +50,23 @@ document.getElementById("loginBtn").addEventListener("click", async () => {
 
         const userData = userSnap.data();
         if (userData.password === password) {
-            alert("Login Successful!");
-            console.log("User logged in:", userId);
-
+            window.location.href = `interview.html?userID=${encodeURIComponent(userId)}`;
         } else {
             alert("Incorrect password!");
         }
     } catch (error) {
         alert("Error: " + error.message);
     }
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+    document.getElementById("go_to_register").addEventListener("click", function () {
+        document.getElementById('login').style.display = 'none';
+        document.getElementById('register').style.display = 'block';
+    });
+
+    document.getElementById("go_to_login").addEventListener("click", function () {
+        document.getElementById('login').style.display = 'block';
+        document.getElementById('register').style.display = 'none';
+    });
 });
