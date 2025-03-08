@@ -6,9 +6,92 @@ let interviewID = "";
 const params = new URLSearchParams(window.location.search);
 const userID = params.get("userID");
 const chatInput = document.getElementById('chatInput');
-const submitButton = document.getElementById('submit_button');
+
+document.getElementById('submit_button').addEventListener('click', async function() {
+    const answer = chatInput.value.trim();
+    if (answer) {
+        try {
+            const interviewRef = doc(db, "interviews", interviewID);
+            const interviewSnap = await getDoc(interviewRef);
+            
+            if (!interviewSnap.exists()) {
+                console.error("Interview not found!");
+                return;
+            }
+
+            const interviewData = interviewSnap.data();
+            const questions = interviewData.questions || [];
+            const questionID = questions[0];  
+            if (!questionID) {
+                console.error("No question ID found.");
+                return;
+            }
+
+            // Update the answer for this question in the "questions" collection
+            await updateAnswer(interviewID, questionID, answer);
+
+            const apiResponse = await callEvaluateAPI(questionID, interviewID, answer);
+            
+            // Clear the input field after submission
+            chatInput.value = '';
+
+        } catch (error) {
+            console.error("Error submitting answer:", error);
+        }
+    } else {
+        alert("Please provide an answer before submitting!");
+    }
+});
+
+async function callEvaluateAPI(questionID, interviewID, answer) {
+    try {
+        const response = await fetch("http://127.0.0.1:5000/evaluate", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                questionID: questionID,
+                interviewID: interviewID,
+                answer: answer
+            })
+        });
+
+        const result = await response.json();
+        if (response.ok) {
+            return result;  // Handle response from the API if needed
+        } else {
+            console.error("Failed to call API:", result.error);
+            return null;
+        }
+    } catch (error) {
+        console.error("API call failed:", error);
+        return null;
+    }
+}
 
 
+async function updateAnswer(interviewID, questionID, answer) {
+    try {
+        // Fetch the question document
+        const questionRef = doc(db, "questions", questionID);
+        const questionSnap = await getDoc(questionRef);
+
+        if (!questionSnap.exists()) {
+            console.error("Question not found with ID:", questionID);
+            return;
+        }
+
+        // Update the answer field
+        await updateDoc(questionRef, {
+            answer: answer
+        });
+
+        console.log("Answer updated successfully!");
+    } catch (error) {
+        console.error("Error updating the answer:", error);
+    }
+}
 
 async function fetchQuestions(interviewID) {
     const interviewRef = doc(db, "interviews", interviewID);

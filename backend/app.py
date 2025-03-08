@@ -7,7 +7,6 @@ import google.generativeai as genai
 
 genai.configure(api_key="AIzaSyBKhoXFiVWjdlkF6qmPUluho0z1971_gr0") 
 
-
 import random
 import string
 
@@ -89,6 +88,32 @@ def add_questions_api():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+@app.route('/evaluate', methods=['POST'])
+def evaluate_answer():
+    # Get the data sent from the client-side
+    data = request.get_json()
+
+    # Extract questionID, interviewID, and answer from the incoming data
+    questionID = data.get('questionID')
+    interviewID = data.get('interviewID')
+    answer = data.get('answer')
+
+    # Check if all required data is provided
+    if not questionID or not interviewID or not answer:
+        return jsonify({"error": "Missing data. Ensure questionID, interviewID, and answer are provided."}), 400
+    
+    # Here you can add your custom logic to evaluate the answer based on the questionID.
+    evaluation_result = evaluate_answer_logic(interviewID, questionID, answer)
+
+    # You can also update Firestore or your database with the evaluation result if needed here.
+    # For example, store the evaluation result in the database for future reference.
+
+    return jsonify({"evaluation_result": evaluation_result, "message": "Answer evaluated successfully!"}), 200
+
+
+def evaluate_answer_logic(interviewID, questionID, answer):
+    pass
 
 if __name__ == '__main__':
     app.run(debug=True)
