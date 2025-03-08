@@ -4,6 +4,39 @@ import { setDoc, doc, getDoc, updateDoc, arrayUnion } from "https://www.gstatic.
 const params = new URLSearchParams(window.location.search);
 const userID = params.get("userID");
 
+
+async function fetchQuestions(interviewID) {
+    const interviewRef = doc(db, "interviews", interviewID);
+    const interviewSnap = await getDoc(interviewRef);
+
+    if (!interviewSnap.exists()) {
+        console.error("No interview found with ID:", interviewID);
+        return;
+    }
+
+    const interviewData = interviewSnap.data();
+    const questionIDs = interviewData.questions || [];
+
+    if (questionIDs.length === 0) {
+        console.warn("No questions found for this interview.");
+        return;
+    }
+
+    let questionTexts = [];
+
+    for (const quesID of questionIDs) {
+        const quesRef = doc(db, "questions", quesID);
+        const quesSnap = await getDoc(quesRef);
+
+        if (quesSnap.exists()) {
+            const questionData = quesSnap.data();
+            questionTexts.push(questionData.question);
+        }
+    }
+
+    document.getElementById("aiQuestions").value = questionTexts.join("\n");
+}
+
 document.getElementById('fileInput').addEventListener('change', function(event) {
     const fileList = document.getElementById('fileList');
     
@@ -66,7 +99,48 @@ document.getElementById("upload_button").addEventListener("click", async () => {
     } catch (error) {
         alert("Error: " + error.message);
     }   
+
+
+    // call add_questions(interviewId) in python here
+    await callGenerateQuestionsAPI(interviewID);
+
+    await fetchQuestions(interviewID);
 });
+
+async function callGenerateQuestionsAPI(interviewID) {
+    try {
+        console.log("Calling API with interview ID:", interviewID);
+        const response = await fetch("http://127.0.0.1:5000/add_questions", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ interview_id: interviewID })
+        });
+
+        console.log("API response status:", response.status);
+        
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error("API Error Response:", errorText);
+            return false;
+        }
+
+        const result = await response.json();
+        console.log("API response:", result);
+        
+        if (result.message) {
+            console.log("Questions added successfully!");
+            return true;
+        } else {
+            console.error("Error generating questions:", result.error);
+            return false;
+        }
+    } catch (error) {
+        console.error("API call failed:", error);
+        return false;
+    }
+}
 
 async function uploadFile(file, interviewID) {
     const fileID = generateUniqueID();

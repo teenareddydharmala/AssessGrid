@@ -1,8 +1,46 @@
 import { db } from "../../firebase/firebase.js";
 import { setDoc, doc, getDoc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
 
+let interviewID = "";
+
 const params = new URLSearchParams(window.location.search);
 const userID = params.get("userID");
+const chatInput = document.getElementById('chatInput');
+const submitButton = document.getElementById('submit_button');
+
+
+
+async function fetchQuestions(interviewID) {
+    const interviewRef = doc(db, "interviews", interviewID);
+    const interviewSnap = await getDoc(interviewRef);
+
+    if (!interviewSnap.exists()) {
+        console.error("No interview found with ID:", interviewID);
+        return;
+    }
+
+    const interviewData = interviewSnap.data();
+    const questionIDs = interviewData.questions || [];
+
+    if (questionIDs.length === 0) {
+        console.warn("No questions found for this interview.");
+        return;
+    }
+
+    let questionTexts = [];
+
+    for (const quesID of questionIDs) {
+        const quesRef = doc(db, "questions", quesID);
+        const quesSnap = await getDoc(quesRef);
+
+        if (quesSnap.exists()) {
+            const questionData = quesSnap.data();
+            questionTexts.push(questionData.question);
+        }
+    }
+
+    document.getElementById("aiQuestions").value = questionTexts.join("\n");
+}
 
 document.getElementById('fileInput').addEventListener('change', function(event) {
     const fileList = document.getElementById('fileList');
@@ -37,7 +75,7 @@ document.getElementById("upload_button").addEventListener("click", async () => {
         return;
     }
 
-    const interviewID = generateUniqueID();
+    interviewID = generateUniqueID();
     
     try {
         await setDoc(doc(db, "interviews", interviewID), {
@@ -66,7 +104,54 @@ document.getElementById("upload_button").addEventListener("click", async () => {
     } catch (error) {
         alert("Error: " + error.message);
     }   
+
+    try{
+    console.log("Calling API to generate questions...");
+        const success = await callGenerateQuestionsAPI(interviewID);
+        
+        if (success) {
+            console.log("Waiting for database to update...");
+            // Wait 3 seconds for Firebase to update
+            setTimeout(async () => {
+                console.log("Fetching generated questions...");
+                await fetchQuestions(interviewID);
+            }, 3000);
+        } else {
+            alert("Failed to generate questions. Please try again.");
+        }
+        
+    } catch (error) {
+        alert("Error: " + error.message);
+    }
 });
+
+async function callGenerateQuestionsAPI(interviewID) {
+    try {
+        console.log("Calling API with interview ID:", interviewID);
+        const response = await fetch("http://127.0.0.1:5000/add_questions", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ interview_id: interviewID })
+        });
+
+        console.log("API response status:", response.status);
+        const result = await response.json();
+        console.log("API response:", result);
+        
+        if (result.message) {
+            console.log("Questions added successfully!");
+            return true;
+        } else {
+            console.error("Error generating questions:", result.error);
+            return false;
+        }
+    } catch (error) {
+        console.error("API call failed:", error);
+        return false;
+    }
+}
 
 async function uploadFile(file, interviewID) {
     const fileID = generateUniqueID();
@@ -91,6 +176,7 @@ async function uploadFile(file, interviewID) {
         throw error;
     }
 }
+
 
 async function processFile(file) {
     return new Promise((resolve, reject) => {
@@ -150,3 +236,4 @@ function generateUniqueID() {
     console.log(uniqueID);
     return uniqueID;
 }
+
