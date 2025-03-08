@@ -27,17 +27,17 @@ document.getElementById('fileInput').addEventListener('change', function(event) 
     });
 });
 
-function processFiles() {
+document.getElementById("upload_button").addEventListener("click", async () => {
     alert("Processing uploaded PDFs...");
-}
+});
 
-function toggleMic() {
+document.getElementById("mic_button").addEventListener("click", async () => {
     if (micActive) {
         stopListening();
     } else {
         startListening();
     }
-}
+});
 
 function startListening() {
     if (!('webkitSpeechRecognition' in window)) {

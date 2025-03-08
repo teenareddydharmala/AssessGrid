@@ -46,7 +46,7 @@ document.getElementById("loginBtn").addEventListener("click", async () => {
         if (!userSnap.exists()) {
             alert("User not found!");
             return;
-        }
+        } 
 
         const userData = userSnap.data();
         if (userData.password === password) {

@@ -14,14 +14,14 @@
             <input type="file" id="fileInput" multiple accept="application/pdf">
         </div>
         <ul class="file-list" id="fileList"></ul>
-        <button class="process-btn" onclick="processFiles()">Process</button>
+        <button id="upload_button">Set up Interview</button>
     </div>
     <div class="main-content">
         <div class="timer" id="timer">00:00</div>
         <h2>Chat with AssessGrid</h2>
         <input type="text" id="chatInput" placeholder="Type your answer here...">
         <textarea id="voiceOutput" placeholder="Voice input will appear here..." rows="4" readonly></textarea>
-        <button class="mic-button" onclick="toggleMic()">🎙️</button>
+        <button id="mic_button">🎙️</button>
     </div>
     <script type="module" src="./Frontend/js/interview.js"></script>
 </body>
