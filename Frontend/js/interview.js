@@ -106,8 +106,53 @@ document.getElementById("mic_button").addEventListener("click", async () => {
     }
 });
 
-function processFile(file) {
-    return `Processed data for ${file.name}`;
+async function processFile(file) {
+    return new Promise((resolve, reject) => {
+      
+        const reader = new FileReader();
+        reader.onload = async function(event) {
+            try {
+                
+                if (typeof pdfjsLib === 'undefined') {
+                    console.warn("PDF.js is not loaded");
+                    resolve(null);
+                    return;
+                }
+                
+                const arrayBuffer = event.target.result;
+                const pdf = await pdfjsLib.getDocument({data: arrayBuffer}).promise;
+                let fullText = "";
+                
+                for (let i = 1; i <= pdf.numPages; i++) {
+                    try {
+                        const page = await pdf.getPage(i);
+                        const textContent = await page.getTextContent();
+                        const pageText = textContent.items.map(item => item.str).join(' ');
+                        fullText += pageText + "\n\n";
+                    } catch (pageError) {
+                        console.error(`Error extracting text from page ${i}:`, pageError);
+                    }
+                }
+                
+                if (fullText.trim().length > 0) {
+                    resolve(fullText.trim());
+                } else {
+                    console.warn("No text was extracted from the PDF");
+                    resolve(null);
+                }
+            } catch (error) {
+                console.error("Error processing PDF:", error);
+                resolve(null);
+            }
+        };
+        
+        reader.onerror = function(event) {
+            console.error(`Failed to read file: ${file.name}`);
+            resolve(null); 
+        };
+        
+        reader.readAsArrayBuffer(file);
+    });
 }
 
 function generateUniqueID() {
