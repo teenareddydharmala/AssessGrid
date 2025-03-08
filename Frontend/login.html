@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AssessGrid</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #121212;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background: #1e1e1e;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+            width: 300px;
+            text-align: center;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 5px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background: red;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        a {
+            color: lightblue;
+            text-decoration: none;
+            display: block;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="login">
+        <h2>Login</h2>
+        <input type="userid" placeholder="UserId" id="userlogin">
+        <input type="password" placeholder="Password" id="loginPassword">
+        <button onclick="login()">Login</button>
+        <a href="#" onclick="toggleForm()">Don't have an account? Register</a>
+    </div>
+    <div class="container" id="register" style="display:none;">
+        <h2>Register</h2>
+        <input type="text" placeholder="UserId" id="registerUserid">
+        <input type="password" placeholder="Password" id="registerPassword">
+        <button onclick="register()">Register</button>
+        <a href="#" onclick="toggleForm()">Already have an account? Login</a>
+    </div>
+
+    <script>
+        function toggleForm() {
+            document.getElementById('login').style.display = 
+                document.getElementById('login').style.display === 'none' ? 'block' : 'none';
+            document.getElementById('register').style.display = 
+                document.getElementById('register').style.display === 'none' ? 'block' : 'none';
+        }
+        function login() {
+            alert('Login functionality to be implemented');
+        }
+        function register() {
+            alert('Register functionality to be implemented');
+        }
+    </script>
+</body>
+</html>
