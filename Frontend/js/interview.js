@@ -8,6 +8,7 @@ let recognition;
 let timerInterval;
 let seconds = 0;
 let micActive = false;
+let fullTranscript = ""; // String to store all speech input
 
 document.getElementById('fileInput').addEventListener('change', function(event) {
     const fileList = document.getElementById('fileList');
@@ -176,22 +177,58 @@ function startListening() {
     }
 
     micActive = true;
+    fullTranscript = ""; // Reset the transcript when starting new recording
+    document.getElementById('voiceOutput').value = ""; // Clear display
+    
     recognition = new webkitSpeechRecognition();
-    recognition.continuous = false;
-    recognition.interimResults = false;
+    recognition.continuous = true; // Set to continuous mode
+    recognition.interimResults = true; // Get interim results
     recognition.lang = 'en-US';
 
     recognition.onstart = function() {
         console.log("Voice recognition started");
+        document.getElementById('mic_button').textContent = "Stop Recording"; // Update button text
+        document.getElementById('mic_button').classList.add('recording'); // Optional: add a class for styling
     };
     
     recognition.onresult = function(event) {
-        const transcript = event.results[0][0].transcript;
-        document.getElementById('voiceOutput').value = transcript;
+        let interimTranscript = '';
+        let finalTranscript = '';
+        
+        // Process the results
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+            const transcript = event.results[i][0].transcript;
+            if (event.results[i].isFinal) {
+                finalTranscript += transcript + ' ';
+                fullTranscript += transcript + ' '; // Add to the full transcript
+            } else {
+                interimTranscript += transcript;
+            }
+        }
+        
+        // Update the display with the current transcript and any interim results
+        document.getElementById('voiceOutput').value = fullTranscript + interimTranscript;
+    };
+    
+    recognition.onend = function() {
+        // If still active, restart the recognition (for continuous listening)
+        if (micActive) {
+            recognition.start();
+        } else {
+            document.getElementById('mic_button').textContent = "Start Recording"; // Reset button text
+            document.getElementById('mic_button').classList.remove('recording'); // Remove recording class
+            console.log("Full transcript:", fullTranscript); // Log the complete transcript
+        }
     };
     
     recognition.onerror = function(event) {
         console.error("Error occurred in recognition: ", event.error);
+        if (event.error === 'no-speech') {
+            // Restart if no speech was detected but we're still listening
+            if (micActive) {
+                recognition.start();
+            }
+        }
     };
     
     recognition.start();
@@ -199,10 +236,14 @@ function startListening() {
 
 function stopListening() {
     if (recognition) {
+        micActive = false;
         recognition.stop();
     }
     stopTimer();
-    micActive = false;
+    console.log("Recording stopped. Final transcript:", fullTranscript);
+    
+    // Optional: Send the transcript to your database or process it further
+    // For example, you could add code here to save the transcript to Firestore
 }
 
 function startTimer() {
