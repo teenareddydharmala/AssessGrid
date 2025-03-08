@@ -111,9 +111,32 @@ def evaluate_answer():
 
     return jsonify({"evaluation_result": evaluation_result, "message": "Answer evaluated successfully!"}), 200
 
+def get_ques_and_ans(questionID):
+    try:
+        question_ref = db.collection("questions").document(questionID)
+    
+        question_snap = question_ref.get()
+
+        if question_snap.exists:
+            question_data = question_snap.to_dict()
+
+            question = question_data.get('question')
+            answer = question_data.get('answer')
+
+            return question, answer
+        else:
+            print(f"Question with ID {questionID} not found.")
+            return "", ""
+    except Exception as e:
+        print(f"Error fetching question and answer: {e}")
+        return "", ""
+
 
 def evaluate_answer_logic(interviewID, questionID, answer):
+    data = get_interview_data(interviewID)
+    ques, ans = get_ques_and_ans(questionID)
     pass
+
 
 if __name__ == '__main__':
     app.run(debug=True)
