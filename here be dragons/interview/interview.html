@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AssessGrid</title>
+    <link rel="stylesheet" href="./Frontend/css/interview.css">
+</head>
+<body>
+    <div class="sidebar">
+        <h3>Your documents</h3>
+        <div class="upload-box">
+            <p>Drag and drop PDF files here</p>
+            <input type="file" id="fileInput" multiple accept="application/pdf">
+        </div>
+        <ul class="file-list" id="fileList"></ul>
+        <button id="upload_button">Set up Interview</button>
+    </div>
+    <div class="main-content">
+        <div class="timer" id="timer">00:00</div>
+        <h2>Chat with AssessGrid</h2>
+        <input type="text" id="chatInput" placeholder="Type your answer here...">
+        <textarea id="voiceOutput" placeholder="Voice input will appear here..." rows="4" readonly></textarea>
+        <button id="mic_button">🎙️</button>
+    </div>
+    <script src="https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.min.js"></script>
+<script>
+  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.min.js';
+</script>
+    <script type="module" src="./Frontend/js/interview.js"></script>
+</body>
+</html>

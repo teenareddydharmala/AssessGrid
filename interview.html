@@ -17,11 +17,11 @@
         <button id="upload_button">Set up Interview</button>
     </div>
     <div class="main-content">
-        <div class="timer" id="timer">00:00</div>
-        <h2>Chat with AssessGrid</h2>
-        <input type="text" id="chatInput" placeholder="Type your answer here...">
-        <textarea id="voiceOutput" placeholder="Voice input will appear here..." rows="4" readonly></textarea>
-        <button id="mic_button">🎙️</button>
+        <h2>Chat with Assess Grid</h2>
+        <textarea id="aiQuestions" class="scrollable-box" readonly>
+        </textarea>
+        <textarea id="chatInput" class="scrollable-box" placeholder="Type your answer here..."></textarea>
+        <button id="submit_button">Submit</button>
     </div>
     <script src="https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.min.js"></script>
 <script>
