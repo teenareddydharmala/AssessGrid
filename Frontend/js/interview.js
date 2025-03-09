@@ -34,6 +34,7 @@ document.getElementById('submit_button').addEventListener('click', async functio
             
             // Clear the input field after submission
             chatInput.value = '';
+            window.location.href = `results.html?interviewID=${encodeURIComponent(interviewID)}`;
 
         } catch (error) {
             console.error("Error submitting answer:", error);
