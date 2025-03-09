@@ -91,23 +91,16 @@ def add_questions_api():
 
 @app.route('/evaluate', methods=['POST'])
 def evaluate_answer():
-    # Get the data sent from the client-side
     data = request.get_json()
 
-    # Extract questionID, interviewID, and answer from the incoming data
     questionID = data.get('questionID')
     interviewID = data.get('interviewID')
     answer = data.get('answer')
 
-    # Check if all required data is provided
     if not questionID or not interviewID or not answer:
         return jsonify({"error": "Missing data. Ensure questionID, interviewID, and answer are provided."}), 400
     
-    # Here you can add your custom logic to evaluate the answer based on the questionID.
     evaluation_result = evaluate_answer_logic(interviewID, questionID, answer)
-
-    # You can also update Firestore or your database with the evaluation result if needed here.
-    # For example, store the evaluation result in the database for future reference.
 
     return jsonify({"evaluation_result": evaluation_result, "message": "Answer evaluated successfully!"}), 200
 
@@ -131,11 +124,38 @@ def get_ques_and_ans(questionID):
         print(f"Error fetching question and answer: {e}")
         return "", ""
 
+def analyse(data, ques, ans):
+    context = f"""
+    You are an expert evaluator. Your task is to analyze and evaluate the given answer based on the provided question and reference material. 
+
+    **Reference Material:** {"\n".join(data)}
+    **Question:** {ques}
+    **Answer Given:** {ans}
+
+    ### Evaluation Criteria:
+    1. **Relevance:** How well does the answer align with the reference material?
+    2. **Completeness:** Does the answer fully address the question?
+    3. **Accuracy:** Is the answer factually correct based on the reference material?
+
+    ### Output Format (Strictly follow this format in a single string, no new lines):
+    [Score out of 100] | [List of weak topics, separated by commas] | [List of strong topics, separated by commas]
+
+    ### Example Output:
+    89 | second law | first law, third law
+    """
+
+    response = client.generate_content(prompt=content)
+    score, ws, ss = response.text.split("|")
+    return int(score.strip()), [weakness.strip() for weakness in ws.split(",")], [strength.strip() for strength in ss.split(",")]
 
 def evaluate_answer_logic(interviewID, questionID, answer):
-    data = get_interview_data(interviewID)
-    ques, ans = get_ques_and_ans(questionID)
+    data, (ques, ans) = get_interview_data(interviewID), get_ques_and_ans(questionID)
+    score, weakness, strengths = update_results(analyse(data, ques, ans))
+    update_results(interviewID,score, weakness, strengths)
+    
+def update_results(interviewID,score, weakness, strengths):
     pass
+
 
 
 if __name__ == '__main__':
