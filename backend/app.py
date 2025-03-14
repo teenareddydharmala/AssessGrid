@@ -125,10 +125,10 @@ def get_ques_and_ans(questionID):
         return "", ""
 
 def analyse(data, ques, ans):
-    context = f"""
+    content = f"""
     You are an expert evaluator. Your task is to analyze and evaluate the given answer based on the provided question and reference material. 
 
-    **Reference Material:** {"\n".join(data)}
+    **Reference Material:** {"".join(data)}
     **Question:** {ques}
     **Answer Given:** {ans}
 
@@ -144,18 +144,31 @@ def analyse(data, ques, ans):
     89 | second law | first law, third law
     """
 
-    response = client.generate_content(prompt=content)
+    response = genai.GenerativeModel("gemini-2.0-flash").generate_content(content)
     score, ws, ss = response.text.split("|")
     return int(score.strip()), [weakness.strip() for weakness in ws.split(",")], [strength.strip() for strength in ss.split(",")]
 
 def evaluate_answer_logic(interviewID, questionID, answer):
     data, (ques, ans) = get_interview_data(interviewID), get_ques_and_ans(questionID)
-    score, weakness, strengths = update_results(analyse(data, ques, ans))
-    update_results(interviewID,score, weakness, strengths)
+    score, weakness, strengths = analyse(data, ques, ans)
+    update_results(interviewID, score, weakness, strengths)
+
     
 def update_results(interviewID,score, weakness, strengths):
-    pass
+    print("Here")
+    resultID = generate_unique_key()
+    interview_ref = db.collection("interviews").document(interviewID)
 
+    interview_ref.update({
+        'resultID': resultID
+    })
+
+    result_ref = db.collection('results').document(resultID)
+    result_ref.set({
+        'score': score,
+        'weaknesses': weakness,
+        'strengths': strengths
+    })
 
 
 if __name__ == '__main__':

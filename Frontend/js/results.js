@@ -3,7 +3,7 @@ import { doc, getDoc } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-
 
 const params = new URLSearchParams(window.location.search);
 const interviewID = params.get("interviewID");
-
+alert(interviewID)
 document.addEventListener("DOMContentLoaded", async () => {
     const scoreElement = document.getElementById("score");
     const strengthsElement = document.getElementById("strengths");
