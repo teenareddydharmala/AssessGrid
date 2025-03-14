@@ -21,7 +21,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         const interviewData = interviewSnap.data();
         const resultID = interviewData.resultID; 
-        
+        console.log(resultID);
         if (!resultID) {
             console.error("No result found for this interview.");
             return;

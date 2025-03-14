@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interview Results</title>
+    <link rel="stylesheet" href="css/results.css">
+    <style>
+        /* Additional styles for the results page */
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+        }
+        
+        .score-section {
+            text-align: center;
+            margin: 30px 0;
+        }
+        
+        .score-display {
+            font-size: 48px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .analysis-section {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .feedback-section {
+            margin-bottom: 30px;
+            padding: 15px;
+            background-color: #e8f4fd;
+            border-radius: 8px;
+            border-left: 5px solid #3498db;
+        }
+        
+        .topics-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        
+        .topics-table th, .topics-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .topics-table th {
+            background-color: #f2f2f2;
+        }
+        
+        .performance-indicator {
+            padding: 5px 10px;
+            border-radius: 4px;
+            display: inline-block;
+            font-weight: bold;
+            text-align: center;
+            min-width: 120px;
+        }
+        
+        .excellent {
+            background-color: #27ae60;
+            color: white;
+        }
+        
+        .good {
+            background-color: #2ecc71;
+            color: white;
+        }
+        
+        .fair {
+            background-color: #f39c12;
+            color: white;
+        }
+        
+        .needs-improvement {
+            background-color: #e67e22;
+            color: white;
+        }
+        
+        .poor {
+            background-color: #e74c3c;
+            color: white;
+        }
+        
+        #loading-indicator {
+            text-align: center;
+            margin: 30px 0;
+            display: none;
+        }
+        
+        #error-container {
+            background-color: #ffebee;
+            color: #c62828;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            display: none;
+        }
+        
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Interview Results</h1>
+        
+        <div id="loading-indicator">
+            <p>Loading your results...</p>
+            <div class="spinner"></div>
+        </div>
+        
+        <div id="error-container"></div>
+        
+        <div class="score-section">
+            <h2>Your Score</h2>
+            <div class="score-display"><span id="score">0</span>/100</div>
+        </div>
+        
+        <div class="feedback-section">
+            <h2>Overall Feedback</h2>
+            <p id="feedback">-</p>
+        </div>
+        
+        <div class="analysis-section">
+            <h2>Performance Analysis</h2>
+            <p><strong>Strengths:</strong> <span id="strengths">-</span></p>
+            <p><strong>Weaknesses:</strong> <span id="weaknesses">-</span></p>
+            
+            <div id="topics-container">
+                <!-- Topic analysis will be inserted here by JavaScript -->
+            </div>
+        </div>
+        
+        <div class="actions">
+            <button id="retry_button">Retry Interview</button>
+        </div>
+    </div>
+    
+    <script src="js/results.js"></script>
+</body>
+</html> 
